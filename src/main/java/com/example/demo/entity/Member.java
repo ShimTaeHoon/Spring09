@@ -25,12 +25,15 @@ public class Member extends BaseEntity {
 	// Not null + Unique
 	@Id
 	@Column(length = 50)
-	String id;
+	String id; // 아이디
 	
 	@Column(length = 200, nullable = false)
-	String password;
+	String password; // 패스워드
 	
 	@Column(length = 100, nullable = false)
-	String name;
+	String name; // 이름
+	
+	@Column(length = 100, nullable = false)
+	String role; // 사용자 등급
 	
 }

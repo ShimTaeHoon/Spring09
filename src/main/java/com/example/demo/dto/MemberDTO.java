@@ -27,4 +27,6 @@ public class MemberDTO {
 	
 	LocalDateTime modDate; 
 	
+	String role; //사용자 등급 (예: ROLE_USER, ROLE_ADMIN)
+	
 }

@@ -6,7 +6,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -14,7 +13,7 @@ import com.example.demo.dto.MemberDTO;
 import com.example.demo.service.MemberService;
 
 @Controller
-@RequestMapping("/member")
+//@RequestMapping("/member")
 public class MemberController {
 
 	@Autowired
@@ -24,7 +23,7 @@ public class MemberController {
 	// /member/list
 	// /member/list?page=1
 	// /member/list?page=2
-	@GetMapping("/list")
+	@GetMapping("/member/list")
 	public void list(@RequestParam(name = "page", defaultValue = "0") int page, Model model) {
 		
 		Page<MemberDTO> list = service.getList(page);
@@ -36,10 +35,8 @@ public class MemberController {
 	// 등록화면을 반환하는 메소드
 	// void는 파일의 경로가 url경로가 됨
 	@GetMapping("/register")
-	public void register() {
-		
-		
-		
+	public String register() {
+		return "/member/register";
 	}
 	
 	// 회원을 등록하는 메소드
@@ -51,7 +48,8 @@ public class MemberController {
 		if(result) {
 			
 			// 회원가입에 성공했으면 목록화면으로 이동
-			return "redirect:/member/list";
+//			return "redirect:/member/list";
+			return "redirect:/"; // 로그인 로직 생성 후 수정
 			
 		} else {
 			
@@ -59,14 +57,15 @@ public class MemberController {
 			// 에러메세지 표시
 			redirectAttributes.addFlashAttribute("msg", "아이디가 중복되어 등록에 실패하였습니다");
 				
-			return "redirect:/member/register";
+//			return "redirect:/member/register";
+			return "redirect:/register"; // 수정
 			
 		}
 		
 	}
 	
 	// 상세화면을 반환하는 메소드
-	@GetMapping("/read")
+	@GetMapping("/member/read")
 	// /member/read?id=user1&page=1	
 	// /member/read?id=user1 << 두번째 파라미터에 defaultValue가 있어서 생략 가능, 0값 반환
 	public void read(@RequestParam(name = "id") String id, @RequestParam(name = "page", defaultValue = "0") int page, Model model) {

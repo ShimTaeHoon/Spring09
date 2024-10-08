@@ -47,9 +47,8 @@
 			</div>
 			
 			<div class="card-body">
-				<textarea class="form-control" id="commentContent" rows="3">
- 				</textarea>
-				<button type="button" class="btn btn-secondary" onclick="">댓글등록</button>
+				<textarea class="form-control" id="commentContent" rows="3"></textarea>
+				<button type="button" class="btn btn-secondary" onclick="registerComment()">댓글등록</button>
 			</div>
 			
 		</div>
@@ -61,7 +60,7 @@
 			<button type="button" class="btn btn-primary">수정</button>
 		</a>
 
-[[${page}]]
+<!-- [[${page}]] -->
 
 <!-- 페이지 번호 파라미터 추가 -->
 		<!-- /board/list?page=3 -->
@@ -91,12 +90,111 @@
 			type: "GET", //API 메소드
 			url: "/comment/list?boardNo="+board.no, //API 주소
 			success: function(list) {
-				console.log(list);
+				
+				// div 초기화 (기존의 자식 요소 모두 삭제) 
+				comment_div.innerHTML = '';
+				
+				// 응답목록 뿌리기(삭제 후 다시 출력)
+				// 리스트 안에 있는 요소를 하나씩 꺼내서 태그 생성
+				for(comment of list){
+
+					// 작성자 span 태그 생성
+					let writerSpan = document.createElement('span');
+					
+					// 스타일 설정
+					writerSpan.className = 'fw-bold strong mar';
+					
+					// 작성자 이름 출력
+					writerSpan.textContent = comment.writer;
+					
+					
+					// 댓글 내용 span 태그 생성
+					let contentSpan = document.createElement('span');
+					
+					// 스타일 설정
+					contentSpan.className = 'mar';
+					
+					// 댓글 내용 출력
+					contentSpan.textContent = ' ' + comment.content + ' ';
+					
+					// 댓글 삭제 링크 생성
+					let deleteLink = document.createElement('a');
+					// 클릭 이벤트 설정
+					// 링크 대신 클릭 이벤트로 처리
+					deleteLink.href = '#';
+					deleteLink.addEventListener("click", function(event){
+						event.preventDefault(); // 링크 이동 방지
+						removeComment(comment.commentNo);
+						
+					});
+					
+					deleteLink.textContent = '삭제';
+					
+					// 줄바꿈 태그 생성
+					let lineBreak = document.createElement('br');
+					
+					comment_div.appendChild(writerSpan);
+					comment_div.appendChild(contentSpan);
+					comment_div.appendChild(deleteLink);
+					comment_div.appendChild(lineBreak);
+					
+				}
+				
 			} //응답을 받은 후 처리
 		});		
 		
 	}
 
+	// 등록 이벤트
+	function registerComment() {
+		
+		// 게시물 데이터 가져오기
+		let board = [[${dto}]];
+		
+		// 댓글 태그 가져오기
+		let commentContent = document.getElementById("commentContent");
+		
+		// 등록할 댓글 데이터 생성
+		let dto = {
+			'boardNo' : board.no,
+			'content' : commentContent.value
+		}
+		
+		// AJAX를 호출하여 서버에 댓글 전송 + 등록 요청
+		$.ajax({
+			type: "POST",
+			url: "/comment/register",
+			data: dto,
+			success: function(newNo){
+				if(newNo){
+					// textarea 필드 초기화
+					commentContent.value = null;
+					// 기존 내용을 지우고 댓글 목록을 다시 출력
+					showComment();
+					
+				}
+			}
+		});
+		
+	}	
+
+	// 댓글 삭제 이벤트
+	function removeComment(commentNo) {
+		
+		// AJAX로 댓글 삭제 요청
+		$.ajax({
+			type: "DELETE",
+			url: "/comment/remove?commentNo=" + commentNo,
+			success: function(response){
+				if(response){
+					// 댓글 목록을 다시 출력
+					showComment();
+				}
+			}
+		});
+		
+	}
+	
 </script>
 
 </th:block>
